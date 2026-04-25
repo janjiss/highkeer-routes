@@ -292,7 +292,7 @@ async function build() {
   const globalBbox: BBox = [Infinity, Infinity, -Infinity, -Infinity];
 
   for (const zoom of INDEX_ZOOMS) {
-    const tileMap = new Map<number, Array<{ id: string; name: string; bbox: BBox; lenM: number; eleM: number | null }>>();
+    const tileMap = new Map<number, Array<{ id: string; name: string; bbox: BBox; lenM: number; eleM: number | null; start: [number, number] }>>();
 
     for (const route of routes) {
       if (route.distanceMeters < (MIN_LENGTH_M_BY_ZOOM[zoom] ?? 0)) continue;
@@ -310,6 +310,7 @@ async function build() {
         bbox: route.bbox,
         lenM: Math.round(route.distanceMeters),
         eleM: route.elevationGainM,
+        start: route.coordinates[0] as [number, number],
       };
       for (const t of tiles) {
         const list = tileMap.get(t.mc) || [];
@@ -339,6 +340,7 @@ async function build() {
     version: 1,
     routeCount: routes.length,
     zoomRange: [Math.min(...INDEX_ZOOMS), Math.max(...INDEX_ZOOMS)],
+    indexZooms: INDEX_ZOOMS,
     bbox: globalBbox.every(Number.isFinite) ? globalBbox : [-180, -85, 180, 85],
     generatedAt: new Date().toISOString(),
   };
